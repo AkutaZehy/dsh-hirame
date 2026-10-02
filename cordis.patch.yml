@@ -1,0 +1,7 @@
+# dsh-hirame bundle patch: inserts this plugin into a profile's layer stack.
+# Applied when a profile lists this bundle (or copied by hand for manual installs).
+# name must equal the resolvable module name (= npm package name); id is the
+# config-targeting label and may stay unscoped.
+- insert:
+    - id: dsh-hirame
+      name: 'dsh-hirame'
