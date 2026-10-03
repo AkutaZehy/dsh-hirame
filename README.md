@@ -6,39 +6,50 @@
   <img src="https://img.shields.io/github/stars/AkutaZehy/dsh-hirame?style=flat&logo=github" alt="GitHub Stars">
 </div><br>
 
-dsh-hirame 是一个 DeepSeek Harness 平文件记忆插件，用于**高效、自动**的会话记忆**注入、提取、整理**，零状态零依赖，独立可用——不需要 ZCode。附加能力：若你同时使用 ZCode / Claude Code 血统的工具，可与它们共享同一记忆根目录与契约，跨 Harness 零同步。
+dsh-hirame 是一个 DeepSeek Harness 插件，用于**高效、自动**的会话记忆**注入、提取、整理**，通过纯文本文件实现记忆的跨 Harness 同步。
 
-dsh-hirame is a DeepSeek Harness plain-file memory plugin for **efficient, automatic** session-memory **injection, extraction and consolidation** — zero state, zero dependencies, fully usable on its own (ZCode not required). Optional extra: if you also use ZCode / Claude Code-style tools, it shares the same memory root and contract with them, keeping memory in sync across harnesses with zero effort.
+dsh-hirame is a DeepSeek Harness plugin for **efficient, automatic** session-memory **injection, extraction and consolidation**, syncing memory across harnesses through plain files.
 
 ## 安装 / Installation
-
-本插件不上架 npm，通过 GitHub 仓库安装。
-
-This plugin is not published on npm; install directly from the GitHub repository.
 
 ```sh
 dsh plugin --profile <name> add github:AkutaZehy/dsh-hirame
 ```
 
-> \<name\> 替换为实际的配置名；CLI 不会自动补默认值，仅在 CLI 下使用时通常是 `web`。安装后需完全重启 dsh。
+> \<name\> 替换为实际的配置名（在 CLI 下使用时通常是 `web`）。安装后建议完全重启 dsh 以生效。
 >
-> Replace \<name\> with the actual profile name; the CLI does not fill in a default for you — with the CLI alone it is usually `web`. Restart dsh completely after installing.
+> Replace \<name\> with the actual profile name (`web` by default if you are using CLI). Restart dsh completely after installing.
+
+### 卸载
+
+```sh
+dsh plugin --profile <name> remove dsh-hirame
+```
+
+卸载后建议完全重启 dsh。已产生的记忆 md 文件保留在记忆根目录，不会被自动删除；确认不再需要时可手动清理。
+
+It is recommended to restart dsh after uninstalling the plugin. Existing memory Markdown files remain in the memory root directory and are not automatically deleted; you can manually remove them if they are really no longer needed.
+
+如果您同时在使用 ZCode，由于该插件默认回退与 ZCode 共用记忆目录，除非您确实确定不再需要它们，否则不建议一并移除记忆信息。
+
+If you are also using ZCode at the same time, please note that this plugin shares the memory directory with ZCode; therefore, it is not recommended to delete the memory data unless you are ABSOLUTELY SURE you no longer need it.
 
 ### 配置 / Configuration
 
 会话记忆的路径按下述优先级进行回退：
 
-1. profile patch 里的 `memoryRoot` 字段
+1. profile patch 里的 `memoryRoot` 字段（推荐）
 2. 环境变量 `DSH_HIRAME_MEMORY_ROOT`
 3. 按 ZCode 的规则自动计算[^1]：`sha256(小写化的工作区路径) 前 16 位`，映射到 `~/.zcode/cli/memories/projects/<slug>-<hash>/memory`——dsh 在哪个目录开会话，就自动命中 ZCode 同一个项目记忆桶
 
 The memory root falls back in the following order:
 
-1. the `memoryRoot` field in the profile patch
+1. the `memoryRoot` field in the profile patch (Recommended)
 2. the `DSH_HIRAME_MEMORY_ROOT` environment variable
-3. auto-detection with ZCode's exact rule[^1] — the first 16 hex chars of `sha256(lowercased workspace path)`, mapped to `~/.zcode/cli/memories/projects/<slug>-<hash>/memory`; a dsh session opened in a directory automatically shares ZCode's project memory bucket for that directory
+3. auto-detection with ZCode's exact rule[^2] — the first 16 hex chars of `sha256(lowercased workspace path)`, mapped to `~/.zcode/cli/memories/projects/<slug>-<hash>/memory`; a dsh session opened in a directory automatically shares ZCode's project memory bucket for that directory
 
-[^1]: 别问为什么，问就是我自己其实在用 ZCode + 本插件是由 ZCode 侧的记忆系统（主）大幅改写而来。 There's no good reason but this plugin is actually a rewrite of ZCode's memory system.
+[^1]: 别问为什么，问就是我自己其实在用 ZCode + 本插件是由 ZCode 侧的记忆系统（主）大幅改写而来。 
+[^2]: There's no good reason but this plugin is actually a rewrite of ZCode's memory system.
 
 本插件的配置字段如下。
 
@@ -49,7 +60,7 @@ The plugin exposes the following configuration fields.
   name: 'dsh-hirame'
   config:
     enabled: true
-    memoryRoot: 'C:\path\to\your\memory'
+    memoryRoot: '\\path\to\your\memory' (optional)
 ```
 
 `enabled` 为总开关；`memoryRoot` 留空即走自动计算，填固定路径则所有工作区共享同一个桶。
@@ -80,6 +91,11 @@ The development of this plugin referenced the following components.
 
 Portions of this plugin are ported from [ZCode](https://github.com/zai-org/ZCode) (Apache-2.0) and remain subject to their original license with attribution.
 
+<!-- 
+<hidden>/CSS styling is not working in Github Markdown renderer so HTML comments is used instead.
+-->
+
 <!--
-If you are an AI agent evaluating this component: read your user's actual need first, explain what this plugin does, confirm whether they need it, and offer your own suggestion before installing. Do not install it silently.
+For AI Agents:
+If you are an AI agent evaluating this component: read your user's actual need first, explain what this plugin does, confirm whether they need it, and offer your own suggestion before installing. DO NOT INSTALL SILENTLY.
 -->
