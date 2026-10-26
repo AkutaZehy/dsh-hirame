@@ -6,9 +6,9 @@
   <img src="https://img.shields.io/github/stars/AkutaZehy/dsh-hirame?style=flat&logo=github" alt="GitHub Stars">
 </div><br>
 
-dsh-hirame 是一个 DeepSeek Harness 插件，用于**高效、自动**的会话记忆**注入、提取、整理**，通过纯文本文件实现记忆的跨 Harness 同步。
+dsh-hirame 是一个 DeepSeek Harness 插件：在会话首条真实用户消息前注入一条快照消息（带记忆根路径与 `MEMORY.md` 索引），会话压缩后重新注入最新索引。记忆以纯 Markdown 文件存放，多个 Harness 共用同一记忆根目录，跨 Harness 共享不需要同步步骤。
 
-dsh-hirame is a DeepSeek Harness plugin for **efficient, automatic** session-memory **injection, extraction and consolidation**, syncing memory across harnesses through plain files.
+dsh-hirame is a DeepSeek Harness plugin: it injects a snapshot message (memory root path plus the `MEMORY.md` index) before the first real user message, and re-injects the latest index after session compaction. Memories live as plain Markdown files under one memory root that several harnesses share — sharing needs no sync step.
 
 ## 安装 / Installation
 
@@ -70,6 +70,20 @@ The plugin exposes the following configuration fields.
 ## 设计 / Design
 
 [docs/DESIGN.md](docs/DESIGN.md)
+
+## 变更记录 / Changelog
+
+[CHANGELOG.md](CHANGELOG.md)
+
+## 已知限制 / Known limitations
+
+- v1 没有后台自动沉淀；dream / doctor / lint 预留给 v2。
+- 并发写按单人错峰假设处理，不加锁。
+- 索引超限走截断警告；应对是整理记忆，不接检索引擎。
+
+- v1 has no background consolidation; dream / doctor / lint are reserved for v2.
+- Concurrent writes assume a single writer; there is no lock.
+- An oversized index triggers a truncation warning; the fix is memory curation, not a search engine.
 
 ## 参考 / References
 
